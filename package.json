@@ -10,16 +10,27 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:focus.helloWorld"
+    "onCommand:focus.startFocus"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "focus.helloWorld",
-        "title": "Hello World"
+        "command": "focus.startFocus",
+        "title": "Time to Focus!"
+      },
+      {
+        "command": "focus.showIcon",
+        "title": "Show Focus Cat!",
+        "icon": "icons/cat.png"
       }
-    ]
+    ],
+    "menus": {
+      "editor/title": [{
+          "command": "focus.showIcon",
+          "group": "navigation"
+      }]
+  }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

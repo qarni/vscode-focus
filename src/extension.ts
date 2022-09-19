@@ -13,13 +13,21 @@ export function activate(context: vscode.ExtensionContext) {
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('focus.helloWorld', () => {
+	let startFocus = vscode.commands.registerCommand('focus.startFocus', () => {
 		// The code you place here will be executed every time your command is executed
 		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from Focus!');
+		vscode.window.showInformationMessage('Time to Focus!');
+
+		// call constructor & start focus session
 	});
 
-	context.subscriptions.push(disposable);
+	let showIcon = vscode.commands.registerCommand('focus.showIcon', () => {
+		// call the start focus function
+		console.log('hi cat');
+	});
+
+	context.subscriptions.push(startFocus);
+	context.subscriptions.push(showIcon);
 }
 
 // this method is called when your extension is deactivated
