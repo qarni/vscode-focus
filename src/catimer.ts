@@ -8,7 +8,7 @@ export class catimer {
     private max_sessions: Number;
     private task_name: String;
 
-    private status: Boolean; // paused == F or working == T
+    private is_running: Boolean; // paused == F or working == T
     private time: Number;   // TODO: update this to be an actual timer
 
 
@@ -21,7 +21,7 @@ export class catimer {
         this.max_sessions = 4;
         this.task_name = "";
 
-        this.status = false;
+        this.is_running = false;
         this.time = this.work_length;
     }
 
@@ -45,8 +45,8 @@ export class catimer {
         return this.task_name;
     }
 
-    public get currStatus() : Boolean {
-        return this.status;
+    public get isRunning() : Boolean {
+        return this.is_running;
     }
     public get timeRemaining() : Number {
         return this.time;

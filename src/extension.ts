@@ -51,7 +51,7 @@ export function deactivate() {
 
 // Called every time the status bar needs to be updated
 function updateStatusBar(): void {
-	let statusSymbol = sessionTimer.currStatus ? '$(debug-pause)' : '$(play)';
+	let statusSymbol = sessionTimer.isRunning ? '$(play)' : '$(debug-pause)';
 	statusBarItem.text =`${sessionTimer.timeRemaining} ` +
 						statusSymbol + 
 						`Session: ${sessionTimer.sessionNumber}/${sessionTimer.maxSessions} ` +
