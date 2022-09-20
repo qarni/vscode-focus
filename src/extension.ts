@@ -10,10 +10,12 @@ let catTimer: catimer;
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-	
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "focus" is now active!');
+
+		// initialize cat timer 
+		catTimer = new catimer();
+		// create a new status bar item that we can now manage
+		statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
 
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
@@ -23,16 +25,7 @@ export function activate(context: vscode.ExtensionContext) {
 		// Display a message box to the user
 		vscode.window.showInformationMessage('Time to Focus!');
 
-		// call constructor & start focus session
-	});
-
-	// initialize timer 
-	catTimer = new catimer();
-	// create a new status bar item that we can now manage
-	statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
-
-	let showIcon = vscode.commands.registerCommand('focus.showIcon', () => {
-		// call the start focus functi
+		// start focus session
 		let options: vscode.InputBoxOptions = {
 			prompt: "Type in your task name to start the focus session! (*≧ω≦)",
 		}
@@ -46,7 +39,6 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	context.subscriptions.push(startFocus);
-	context.subscriptions.push(showIcon);
 	context.subscriptions.push(statusBarItem);
 }
 
