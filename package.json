@@ -10,7 +10,8 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:focus.startFocus"
+    "onCommand:focus.startFocus",
+    "onCommand:focus.showIcon"
   ],
   "main": "./out/extension.js",
   "contributes": {
