@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 import {catimer} from './catimer'
 
 let statusBarItem: vscode.StatusBarItem;
-let sessionTimer: catimer;
+let catTimer: catimer;
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -31,7 +31,7 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	// initialize timer 
-	sessionTimer = new catimer();
+	catTimer = new catimer();
 
 	// create a new status bar item that we can now manage
 	statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
@@ -51,10 +51,10 @@ export function deactivate() {
 
 // Called every time the status bar needs to be updated
 function updateStatusBar(): void {
-	let statusSymbol = sessionTimer.isRunning ? '$(play)' : '$(debug-pause)';
-	statusBarItem.text =`${sessionTimer.timeRemaining} ` +
+	let statusSymbol = catTimer.isRunning ? '$(play)' : '$(debug-pause)';
+	statusBarItem.text =`${catTimer.timeRemaining} ` +
 						statusSymbol + 
-						`Session: ${sessionTimer.sessionNumber}/${sessionTimer.maxSessions} ` +
-						`Task: ${sessionTimer.taskName}`;
+						`Session: ${catTimer.sessionNumber}/${catTimer.maxSessions} ` +
+						`Task: ${catTimer.taskName}`;
 	statusBarItem.show();
 }
