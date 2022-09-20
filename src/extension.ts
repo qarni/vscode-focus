@@ -1,7 +1,11 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { InputBoxOptions } from 'vscode';
+
+import {catimer} from './catimer';
+
+let statusBarItem: vscode.StatusBarItem;
+let catTimer: catimer;
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -22,21 +26,41 @@ export function activate(context: vscode.ExtensionContext) {
 		// call constructor & start focus session
 	});
 
+	// initialize timer 
+	catTimer = new catimer();
+	// create a new status bar item that we can now manage
+	statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+
 	let showIcon = vscode.commands.registerCommand('focus.showIcon', () => {
 		// call the start focus functi
-		let options: InputBoxOptions = {
-			prompt: "Type in your task name here! (*≧ω≦)",
+		let options: vscode.InputBoxOptions = {
+			prompt: "Type in your task name to start the focus session! (*≧ω≦)",
 		}
 		
 		vscode.window.showInputBox(options).then((value: any) => {
 			if (!value) return;
-			const taskName = value;
+			catTimer.setTaskName = value;
+			catTimer.changeStatus;
+			updateStatusBar();
 		});
 	});
 
 	context.subscriptions.push(startFocus);
 	context.subscriptions.push(showIcon);
+	context.subscriptions.push(statusBarItem);
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() {
+	statusBarItem.dispose();
+}
+
+// Called every time the status bar needs to be updated
+function updateStatusBar(): void {
+	let statusSymbol = catTimer.isRunning ? '$(play)' : '$(debug-pause)';
+	statusBarItem.text =`${catTimer.timeRemaining} ` +
+						statusSymbol + 
+						`Session: ${catTimer.sessionNumber}/${catTimer.maxSessions} ` +
+						`Task: ${catTimer.taskName}`;
+	statusBarItem.show();
+}
