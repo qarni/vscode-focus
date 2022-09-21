@@ -52,6 +52,18 @@ export class catimer {
         return this.time;
     }
 
+    public set workLength(workLength : Number) {
+        this.work_length = workLength;
+    }
+    public set breakLength(breakLength : Number) {
+        this.break_length = breakLength;
+    }
+    public set longBreakLength(longBreakLength : Number) {
+        this.long_break_length = longBreakLength;
+    }
+    public set maxSessions(maxSessions : Number) {
+        this.max_sessions = maxSessions;
+    }
     public set setTaskName(name : String) {
         this.task_name = name;
     }

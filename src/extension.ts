@@ -41,20 +41,20 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.window.showInputBox(options).then((value: any) => {
 			if (!value) return;
 			catTimer.setTaskName = value;
-			const config = vscode.workspace.getConfiguration('focus');
-   			const workLengthSetting = getConfigValue("work_length_setting", config);
 			catTimer.changeStatus;
 			updateStatusBar();
-
-			// Test to check if settings are populating and being passed downstream.
-			vscode.commands.executeCommand( 'workbench.action.openSettings', 'focus' );
-			console.log("setting val: " + workLengthSetting);
 		});
 	});
 
 	context.subscriptions.push(startFocus);
 	context.subscriptions.push(showIcon);
 	context.subscriptions.push(statusBarItem);
+
+	// Subscribe to configuration changes
+    context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(onDidChangeConfiguration));
+
+    // Initialize from the current configuration
+    onDidChangeConfiguration();
 }
 
 // this method is called when your extension is deactivated
@@ -62,7 +62,20 @@ export function deactivate() {
 	statusBarItem.dispose();
 }
 
-// Create event handler for when settings change through options page, then update it here.
+function onDidChangeConfiguration() {
+	const config = vscode.workspace.getConfiguration('focus');
+	const workLengthSetting = getConfigValue("work_length_setting", config);
+	const breakLengthSetting = getConfigValue("break_length_setting", config);
+	const longBreakLengthSetting = getConfigValue("long_break_length_setting", config);
+	const maxSessionsSetting = getConfigValue("max_sessions_setting", config);
+	catTimer.workLength = workLengthSetting;
+	catTimer.breakLength = breakLengthSetting;
+	catTimer.breakLength = longBreakLengthSetting;
+	catTimer.breakLength = maxSessionsSetting;
+
+	// Test to check if settings are populating and being passed downstream.
+	vscode.commands.executeCommand( 'workbench.action.openSettings', 'focus' );
+}
 
 // Called every time the status bar needs to be updated
 function updateStatusBar(): void {
