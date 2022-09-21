@@ -1,6 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import { getConfigValue, ThemeConfig, updateConfig } from './config/config';
 
 import {catimer} from './catimer';
 
@@ -40,8 +41,14 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.window.showInputBox(options).then((value: any) => {
 			if (!value) return;
 			catTimer.setTaskName = value;
+			const config = vscode.workspace.getConfiguration('focus');
+   			const workLengthSetting = getConfigValue("work_length_setting", config);
 			catTimer.changeStatus;
 			updateStatusBar();
+
+			// Test to check if settings are populating and being passed downstream.
+			vscode.commands.executeCommand( 'workbench.action.openSettings', 'focus' );
+			console.log("setting val: " + workLengthSetting);
 		});
 	});
 
@@ -54,6 +61,8 @@ export function activate(context: vscode.ExtensionContext) {
 export function deactivate() {
 	statusBarItem.dispose();
 }
+
+// Create event handler for when settings change through options page, then update it here.
 
 // Called every time the status bar needs to be updated
 function updateStatusBar(): void {

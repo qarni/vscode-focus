@@ -26,6 +26,26 @@
         "icon": "icons/cat.png"
       }
     ],
+    "configuration": [
+      {
+        "title": "General",
+        "order": 0,
+        "properties": {
+          "focus.work_length_setting": {
+            "order": 1,
+            "type": "integer",
+            "enum": [
+              25,
+              45,
+              60,
+              90
+            ],
+            "default": 25,
+            "description": "Choose work session length"
+          }
+        }
+      }
+    ],
     "menus": {
       "editor/title": [
         {
