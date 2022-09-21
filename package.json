@@ -35,6 +35,7 @@
             "order": 1,
             "type": "integer",
             "enum": [
+              15,
               25,
               45,
               60,
