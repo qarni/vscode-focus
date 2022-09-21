@@ -45,7 +45,7 @@
             "description": "Choose work session length"
           },
           "focus.break_length_setting": {
-            "order": 1,
+            "order": 2,
             "type": "integer",
             "enum": [
               5,
@@ -57,7 +57,7 @@
             "description": "Choose break session length"
           },
           "focus.long_break_length_setting": {
-            "order": 1,
+            "order": 3,
             "type": "integer",
             "enum": [
               20,
@@ -69,7 +69,7 @@
             "description": "Choose long break session length"
           },
           "focus.max_sessions_setting": {
-            "order": 1,
+            "order": 4,
             "type": "integer",
             "enum": [
               2,
