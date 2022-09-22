@@ -21,6 +21,64 @@
         "icon": "icons/cat.png"
       }
     ],
+    "configuration": [
+      {
+        "title": "General",
+        "order": 0,
+        "properties": {
+          "focus.work_length_setting": {
+            "order": 1,
+            "type": "integer",
+            "enum": [
+              15,
+              25,
+              45,
+              60,
+              90
+            ],
+            "default": 25,
+            "description": "Choose work session length"
+          },
+          "focus.break_length_setting": {
+            "order": 2,
+            "type": "integer",
+            "enum": [
+              5,
+              10,
+              15,
+              20
+            ],
+            "default": 5,
+            "description": "Choose break session length"
+          },
+          "focus.long_break_length_setting": {
+            "order": 3,
+            "type": "integer",
+            "enum": [
+              20,
+              30,
+              45,
+              60
+            ],
+            "default": 20,
+            "description": "Choose long break session length"
+          },
+          "focus.max_sessions_setting": {
+            "order": 4,
+            "type": "integer",
+            "enum": [
+              2,
+              3,
+              4,
+              4,
+              6
+            ],
+            "default": 4,
+            "description": "Choose number of sessions before a long break"
+          }
+        }
+      }
+    ],
     "menus": {
       "editor/title": [
         {
