@@ -52,7 +52,9 @@ export function activate(context: vscode.ExtensionContext) {
     });
   });
 
-  let addTask = vscode.commands.registerCommand("focus.addTask", () => { });
+  let addTask = vscode.commands.registerCommand("focus.addTask", () => {
+
+  });
   vscode.window.registerTreeDataProvider('nodeDependencies', new TaskProvider());
 
   context.subscriptions.push(startFocus);
