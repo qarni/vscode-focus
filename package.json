@@ -35,7 +35,7 @@
       ]
     },
     "views": {
-      "cat-focus-mode":[
+      "cat-focus-mode": [
         {
           "id": "catFocusTasks",
           "name": "Cat Focus Mode Tasks",

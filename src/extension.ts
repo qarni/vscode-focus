@@ -13,45 +13,46 @@ let catTimer: catimer;
 export function activate(context: vscode.ExtensionContext) {
   console.log('Congratulations, your extension "focus" is now active!');
 
-  // initialize cat timer 
+  // initialize cat timer
   catTimer = new catimer();
   // create a new status bar item that we can now manage
   statusBarItem = vscode.window.createStatusBarItem(
     vscode.StatusBarAlignment.Right,
     100
   );
-  statusBarItem.command = 'focus.clickStatusBar';
-  statusBarItem.tooltip = 'Cat Timer Focus Mode';
-	let clickStatusBar = vscode.commands.registerCommand('focus.clickStatusBar', () => {
-		console.log("clicked on status bar");
+  statusBarItem.command = "focus.clickStatusBar";
+  statusBarItem.tooltip = "Cat Timer Focus Mode";
+  let clickStatusBar = vscode.commands.registerCommand(
+    "focus.clickStatusBar",
+    () => {
+      console.log("clicked on status bar");
 
-		vscode.window.showQuickPick(["a"]);
-	});
+      vscode.window.showQuickPick(["a"]);
+    }
+  );
 
   // The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let startFocus = vscode.commands.registerCommand('focus.startFocus', () => {
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Time to Focus!');
+  // Now provide the implementation of the command with registerCommand
+  // The commandId parameter must match the command field in package.json
+  let startFocus = vscode.commands.registerCommand("focus.startFocus", () => {
+    // Display a message box to the user
+    vscode.window.showInformationMessage("Time to Focus!");
 
-		// start focus session
-		let options: vscode.InputBoxOptions = {
-			prompt: "Type in your task name to start the focus session! (*≧ω≦)",
-		}
+    // start focus session
+    let options: vscode.InputBoxOptions = {
+      prompt: "Type in your task name to start the focus session! (*≧ω≦)",
+    };
 
-		vscode.window.showInputBox(options).then((value: any) => {
-			if (!value) return;
-			catTimer.setTaskName = value;
-			catTimer.changeStatus;
-			updateStatusBar();
-		});
-	});
+    vscode.window.showInputBox(options).then((value: any) => {
+      if (!value) return;
+      catTimer.setTaskName = value;
+      catTimer.changeStatus;
+      updateStatusBar();
+    });
+  });
 
-	let addTask = vscode.commands.registerCommand('focus.addTask', () => {
-		
-	});
-	//vscode.window.registerTreeDataProvider('nodeDependencies', new DepNodeProvider());
+  let addTask = vscode.commands.registerCommand("focus.addTask", () => {});
+  //vscode.window.registerTreeDataProvider('nodeDependencies', new DepNodeProvider());
 
   context.subscriptions.push(startFocus);
   context.subscriptions.push(statusBarItem);
