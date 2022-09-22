@@ -19,6 +19,34 @@
         "command": "focus.startFocus",
         "title": "Time to Focus!",
         "icon": "icons/cat.png"
+      },
+      {
+        "command": "focus.askTask",
+        "title": "Add a Task"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "cat-focus-mode",
+          "title": "Cat Focus Mode",
+          "icon": "icons/cat.png"
+        }
+      ]
+    },
+    "views": {
+      "cat-focus-mode":[
+        {
+          "id": "catFocusTasks",
+          "name": "Cat Focus Mode Tasks",
+          "icon": "icons/cat.png"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "catFocusTasks",
+        "contents": "No tasks on your to do list yet!\n[Add a Task](command:focus.addTask)"
       }
     ],
     "configuration": [

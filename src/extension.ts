@@ -32,7 +32,6 @@ export function activate(context: vscode.ExtensionContext) {
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
 	let startFocus = vscode.commands.registerCommand('focus.startFocus', () => {
-		// The code you place here will be executed every time your command is executed
 		// Display a message box to the user
 		vscode.window.showInformationMessage('Time to Focus!');
 
@@ -48,6 +47,11 @@ export function activate(context: vscode.ExtensionContext) {
 			updateStatusBar();
 		});
 	});
+
+	let addTask = vscode.commands.registerCommand('focus.addTask', () => {
+		
+	});
+	//vscode.window.registerTreeDataProvider('nodeDependencies', new DepNodeProvider());
 
   context.subscriptions.push(startFocus);
   context.subscriptions.push(statusBarItem);
