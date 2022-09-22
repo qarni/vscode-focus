@@ -7,6 +7,7 @@ import {catimer} from './catimer';
 let statusBarItem: vscode.StatusBarItem;
 let catTimer: catimer;
 let counter : { min: number, sec : number };
+let sub_session_count : number;
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -32,6 +33,8 @@ export function activate(context: vscode.ExtensionContext) {
 	// create a new status bar item that we can now manage
 	statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
 
+	sub_session_count = 0;
+
 	let showIcon = vscode.commands.registerCommand('focus.showIcon', () => {
 		// call the start focus functi
 		let options: vscode.InputBoxOptions = {
@@ -43,15 +46,7 @@ export function activate(context: vscode.ExtensionContext) {
 			catTimer.setTaskName = value;
 			catTimer.changeStatus;
 			updateStatusBar();
-			for (let i = 0; i < 4; i++) {
-				startTimer("work");
-				await new Promise((resolve, reject) => setTimeout(resolve, 1000 * 25 * 60));
-				startTimer("break");
-				await new Promise((resolve, reject) => setTimeout(resolve, 1000 * 5 * 60));
-
-			}
-			startTimer("long break");
-			await new Promise((resolve, reject) => setTimeout(resolve, 1000 * 20 * 60));
+			startInfinitetimer();
 		});
 	});
 
@@ -60,23 +55,27 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(statusBarItem);
 }
 
+
+async function startInfinitetimer() {
+	while (true) {
+		for (let i = 0; i < catTimer.maxSessions; i++) {
+			startTimer(25, 0);
+			await new Promise((resolve, reject) => setTimeout(resolve, 1000 * catTimer.workLength * 60));
+			startTimer(5, 0);
+			await new Promise((resolve, reject) => setTimeout(resolve, 1000 * catTimer.breakLength * 60));
+
+		}
+		startTimer(15, 0);
+		await new Promise((resolve, reject) => setTimeout(resolve, 1000 * catTimer.longBreakLength * 60));
+	}
+}
+
 // this method is called when your extension is deactivated
 export function deactivate() {
 	statusBarItem.dispose();
 }
 
-function startTimer(sessionType : String) {
-	let minutes : number;
-	if (sessionType === "work") {
-		minutes = catTimer.workLength;
-		catTimer.setSubSessionName("work");
-	} else if (sessionType === "break") {
-		minutes = catTimer.breakLength;
-		catTimer.setSubSessionName("break");
-	} else {
-		minutes = catTimer.longBreakLength;
-		catTimer.setSubSessionName("long break");
-	}
+function startTimer (minutes : number, seconds : number) {
 	counter = { min: minutes, sec: 0 };
 	let intervalId = setInterval(() => {
 		if (counter.sec - 1 === -1) {
@@ -90,14 +89,13 @@ function startTimer(sessionType : String) {
 		}
 		catTimer.setTimeRemaining(counter.min, counter.sec);
 		updateStatusBar();
-
 	}, 1000);
   }
 
   // Called every time the status bar needs to be updated
 function updateStatusBar(): void {
 	let statusSymbol = catTimer.isRunning ? '$(play)' : '$(debug-pause)';
-	statusBarItem.text = `Remained ${catTimer.subSessionName} time: ` + 
+	statusBarItem.text = `Remained ${catTimer.sessionName} time: ` + 
 						`${catTimer.timeRemaining} ` +
 						statusSymbol + 
 						`Session: ${catTimer.sessionNumber}/${catTimer.maxSessions} ` +
