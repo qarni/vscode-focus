@@ -2,6 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 import { getConfigValue, ThemeConfig, updateConfig } from "./config/config";
+import { TaskProvider } from './tasks';
 
 import { catimer } from "./catimer";
 
@@ -51,8 +52,8 @@ export function activate(context: vscode.ExtensionContext) {
     });
   });
 
-  let addTask = vscode.commands.registerCommand("focus.addTask", () => {});
-  //vscode.window.registerTreeDataProvider('nodeDependencies', new DepNodeProvider());
+  let addTask = vscode.commands.registerCommand("focus.addTask", () => { });
+  vscode.window.registerTreeDataProvider('nodeDependencies', new TaskProvider());
 
   context.subscriptions.push(startFocus);
   context.subscriptions.push(statusBarItem);
