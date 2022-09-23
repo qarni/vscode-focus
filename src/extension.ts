@@ -55,7 +55,9 @@ export function activate(context: vscode.ExtensionContext) {
   let addTask = vscode.commands.registerCommand("focus.addTask", () => {
 
   });
-  vscode.window.registerTreeDataProvider('nodeDependencies', new TaskProvider());
+  vscode.window.createTreeView('nodeDependencies', {
+    treeDataProvider: new NodeDependenciesProvider(rootPath)
+  });
 
   context.subscriptions.push(startFocus);
   context.subscriptions.push(statusBarItem);
