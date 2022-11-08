@@ -24,8 +24,6 @@ export function activate(context: vscode.ExtensionContext) {
 		// The code you place here will be executed every time your command is executed
 		// Display a message box to the user
 		vscode.window.showInformationMessage('Time to Focus!');
-
-		// call constructor & start focus session
 	});
 
 	// initialize timer 
@@ -33,16 +31,11 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// create status bar and command to click on it
 	const statusBarClick = 'sample.showSelectionCount';
-	context.subscriptions.push(vscode.commands.registerCommand(statusBarClick, () => {
-		catTimer.changeStatus();
-		vscode.window.showInformationMessage(`Cat timer is now ` + (catTimer.isPaused ? 'paused' : 'resumed'));
-
-		updateStatusBar();
-	}));
+	context.subscriptions.push(vscode.commands.registerCommand(statusBarClick, () => { toggleTimer(); }));
 	// create a new status bar item that we can now manage
 	statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
 	statusBarItem.command = statusBarClick;
-
+	statusBarItem.tooltip = "Toggle CAT timer play/pause";
 
 	sub_session_count = 0;
 
@@ -72,7 +65,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 async function startInfinitetimer() {
 	// start from the given time 
-	while (catTimer.isPaused) {
+	while (!catTimer.isPaused) {
 		//finish the current paused session or the brand new session
 		startTimer(catTimer.remainingMin, catTimer.remainingSec);
 		await new Promise((resolve, reject) => setTimeout(resolve, 1000 * (catTimer.remainingMin * 60 + catTimer.remainingSec)));
@@ -102,8 +95,17 @@ export function deactivate() {
 }
 
 function startTimer(minutes: number, seconds: number) {
-	counter = { min: minutes, sec: 0 };
+	counter = { min: minutes, sec: seconds };
 	let intervalId = setInterval(() => {
+
+		if (catTimer.isPaused || (counter.min === 0 && counter.sec === 0))
+			clearInterval(intervalId);
+
+		// keep on setting remaining time 
+		catTimer.setTimeRemaining(counter.min, counter.sec);
+		updateStatusBar();
+
+
 		if (counter.sec - 1 === -1) {
 			counter.min -= 1;
 			counter.sec = 59;
@@ -111,13 +113,17 @@ function startTimer(minutes: number, seconds: number) {
 			counter.sec -= 1;
 		}
 
-		if (counter.min === 0 && counter.sec === 0) {
-			clearInterval(intervalId);
-		}
-		// keep on setting remaining time 
-		catTimer.setTimeRemaining(counter.min, counter.sec);
-		updateStatusBar();
 	}, 1000);
+}
+
+function toggleTimer(): void {
+	catTimer.changeStatus();
+	vscode.window.showInformationMessage(`Cat timer is now ` + (catTimer.isPaused ? 'paused' : 'resumed'));
+
+	updateStatusBar();
+
+	if (!catTimer.isPaused)
+		startInfinitetimer();
 }
 
 // Called every time the status bar needs to be updated
