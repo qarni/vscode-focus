@@ -8,7 +8,7 @@ export class catimer {
   private max_sessions: number;
   private task_name: String;
 
-  private is_running: Boolean; // paused == F or working == T
+  private paused: Boolean; // paused == F or working == T
   private minutes_remaining: number;
   private seconds_remianing: number;
   private session_name : String; //work, break, long break
@@ -22,7 +22,7 @@ export class catimer {
       this.max_sessions = 4;
       this.task_name = "";
 
-      this.is_running = false;
+      this.paused = false;
       this.minutes_remaining = this.work_length;
       this.seconds_remianing = 0;
       this.session_name = "work";
@@ -48,8 +48,8 @@ export class catimer {
       return this.task_name;
   }
 
-  public get isRunning() : Boolean {
-      return this.is_running;
+  public get isPaused() : Boolean {
+      return this.paused;
   }
   public get timeRemaining() : String {
       return this.minutes_remaining + ":" + this.seconds_remianing;
@@ -57,12 +57,18 @@ export class catimer {
   public get sessionName() : String {
       return this.session_name;
   }
+  public get remainingMin () {
+      return this.minutes_remaining;
+  }
+  public get remainingSec () {
+      return this.seconds_remianing;
+  }
 
   public set setTaskName(name : String) {
       this.task_name = name;
   }
   public changeStatus () {
-      this.is_running = !this.is_running;
+      this.paused = !this.paused;
   }
   public setTimeRemaining (min : number, sec : number) {
       this.minutes_remaining = min;
@@ -70,5 +76,8 @@ export class catimer {
   }
   public setSessionName (newSessionName : String) {
       this.session_name = newSessionName;
+  }
+  public increaseSessionNumber (newNum : number) {
+      this.session_number = newNum;
   }
 }

@@ -50,6 +50,9 @@ export function activate(context: vscode.ExtensionContext) {
 		});
 	});
 
+  // TODO
+  // Add the call when click pause. change the catTimer.paused to change the boolean. click it twice --> call the starttimer
+
 	context.subscriptions.push(startFocus);
 	context.subscriptions.push(showIcon);
 	context.subscriptions.push(statusBarItem);
@@ -57,17 +60,29 @@ export function activate(context: vscode.ExtensionContext) {
 
 
 async function startInfinitetimer() {
-	while (true) {
-		for (let i = 0; i < catTimer.maxSessions; i++) {
-			startTimer(catTimer.workLength, 0);
-			await new Promise((resolve, reject) => setTimeout(resolve, 1000 * catTimer.workLength * 60));
-			startTimer(catTimer.breakLength, 0);
-			await new Promise((resolve, reject) => setTimeout(resolve, 1000 * catTimer.breakLength * 60));
-
-		}
-		startTimer(catTimer.longBreakLength, 0);
-		await new Promise((resolve, reject) => setTimeout(resolve, 1000 * catTimer.longBreakLength * 60));
-	}
+  // start from the given time 
+  while(catTimer.isPaused) {
+    //finish the current paused session or the brand new session
+    startTimer(catTimer.remainingMin, catTimer.remainingSec);
+    await new Promise((resolve, reject) => setTimeout(resolve, 1000 * (catTimer.remainingMin * 60 + catTimer.remainingSec)));
+    // finish the rest sessions
+    for (let i = catTimer.sessionNumber; i < catTimer.maxSessions; i++) {
+      catTimer.increaseSessionNumber(i);
+      if (i % 2 === 1) {
+        // WORK
+        startTimer(catTimer.workLength, 0);
+        await new Promise((resolve, reject) => setTimeout(resolve, 1000 * catTimer.workLength * 60));
+      } else {
+        // BREAK
+        startTimer(catTimer.breakLength, 0);
+        await new Promise((resolve, reject) => setTimeout(resolve, 1000 * catTimer.breakLength * 60));
+      }
+    }
+    // long break
+    catTimer.increaseSessionNumber(1); // set the session back to 1. 
+    startTimer(catTimer.longBreakLength, 0);
+    await new Promise((resolve, reject) => setTimeout(resolve, 1000 * catTimer.longBreakLength * 60));
+  }
 }
 
 // this method is called when your extension is deactivated
@@ -84,9 +99,11 @@ function startTimer (minutes : number, seconds : number) {
 		} else {
 			counter.sec -= 1;
 		}
+
 		if (counter.min === 0 && counter.sec === 0) {
 			clearInterval(intervalId);
 		}
+    // keep on setting remaining time 
 		catTimer.setTimeRemaining(counter.min, counter.sec);
 		updateStatusBar();
 	}, 1000);
@@ -94,7 +111,7 @@ function startTimer (minutes : number, seconds : number) {
 
   // Called every time the status bar needs to be updated
 function updateStatusBar(): void {
-	let statusSymbol = catTimer.isRunning ? '$(play)' : '$(debug-pause)';
+	let statusSymbol = catTimer.isPaused ? '$(play)' : '$(debug-pause)';
 	statusBarItem.text = `Remained ${catTimer.sessionName} time: ` + 
 						`${catTimer.timeRemaining} ` +
 						statusSymbol + 
