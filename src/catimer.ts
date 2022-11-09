@@ -23,7 +23,7 @@ export class catimer {
       this.task_name = "";
 
       this.paused = false;
-      this.minutes_remaining = this.work_length;
+      this.minutes_remaining = 0;
       this.seconds_remianing = 0;
       this.session_name = "work";
   }
