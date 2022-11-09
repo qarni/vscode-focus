@@ -48,6 +48,22 @@ export class catimer {
       return this.task_name;
   }
 
+  public set workLength(workLength: number) {
+    this.work_length = workLength;
+  }
+
+  public set breakLength(breakLength: number) {
+    this.break_length = breakLength;
+  }
+
+  public set longBreakLength(longBreakLength: number) {
+    this.long_break_length = longBreakLength;
+  }
+
+  public set maxSessions(maxSessions: number) {
+    this.max_sessions = maxSessions;
+  }
+
   public get isPaused() : Boolean {
       return this.paused;
   }
