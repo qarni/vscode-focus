@@ -22,9 +22,18 @@ export function activate(context: vscode.ExtensionContext) {
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
 	let startFocus = vscode.commands.registerCommand('focus.startFocus', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
 		vscode.window.showInformationMessage('Time to Focus!');
+
+		let options: vscode.InputBoxOptions = {
+			prompt: "Type in your task name to start the focus session! (*≧ω≦)",
+		};
+
+		vscode.window.showInputBox(options).then(async (value: any) => {
+			if (!value) return;
+			catTimer.setTaskName = value;
+			updateStatusBar();
+			vscode.window.showInformationMessage('Click status bar to start your work sesion!');
+		});
 	});
 
 	// initialize timer 
@@ -39,24 +48,8 @@ export function activate(context: vscode.ExtensionContext) {
 	statusBarItem.tooltip = "Toggle CAT timer play/pause";
 
 	sub_session_count = 0;
-
-	let showIcon = vscode.commands.registerCommand('focus.showIcon', () => {
-		// call the start focus functi
-		let options: vscode.InputBoxOptions = {
-			prompt: "Type in your task name to start the focus session! (*≧ω≦)",
-		};
-
-		vscode.window.showInputBox(options).then(async (value: any) => {
-			if (!value) return;
-			catTimer.setTaskName = value;
-			catTimer.changeStatus;
-			updateStatusBar();
-			startInfinitetimer();
-		});
-	});
 	
 	context.subscriptions.push(startFocus);
-	context.subscriptions.push(showIcon);
 	context.subscriptions.push(statusBarItem);
 
 	  // Subscribe to configuration changes
@@ -95,21 +88,18 @@ async function startInfinitetimer() {
 		}
 		else if(catTimer.sessionType === 1) {
 			currmin = catTimer.workLength;
-			currsec = 0;
 		}
 		else if (catTimer.sessionType === 2) {
 			currmin = catTimer.breakLength;
-			currsec = 0;
 		}
 		else if (catTimer.sessionType === 3) {
 			currmin = catTimer.longBreakLength;
-			currsec = 0;
 		}
 
 		// start the session
 		startTimer(currmin, currsec);
-		await new Promise((resolve, reject) => currentTimeout = setTimeout(resolve, 1000 * (currmin * 60 + currsec)));
-		if(catTimer.isPaused) break;
+		currentTimeout = await new Promise((resolve, reject) => setTimeout(resolve, 1000 * (currmin * 60 + currsec)));
+		if(catTimer.isPaused) {break;}
 
 		// increment if not paused
 		if(catTimer.sessionType === 1) {
@@ -163,23 +153,24 @@ function startTimer(minutes: number, seconds: number) {
 
 function toggleTimer(): void {
 	catTimer.changeStatus();
-	vscode.window.showInformationMessage(`Cat timer is now ` + (catTimer.isPaused ? 'paused - click status bar to resume' : 'resumed'));
+	vscode.window.showInformationMessage(`Cat timer is now ` + (catTimer.isPaused ? 'paused - click status bar to resume' : 'running'));
 
 	updateStatusBar();
 
 	if (!catTimer.isPaused)
-		startInfinitetimer();
+		{startInfinitetimer();}
 }
 
 // Called every time the status bar needs to be updated
 function updateStatusBar(): void {
 	let statusSymbol = catTimer.isPaused ? '$(play) ' : '$(debug-pause) ';
 	let sessionStatus = catTimer.sessionType === 1 ? `Session: ${catTimer.sessionNumber}/${catTimer.maxSessions}` : "Take a Break!";
+	
 	statusBarItem.text = statusSymbol +
 		sessionStatus +
 		` - Remaining time: ` +
 		`${catTimer.timeRemaining} ` +
-		`Task: ${catTimer.taskName}`;
+		` Task: ${catTimer.taskName}`;
 
 	statusBarItem.show();
 }
