@@ -22,7 +22,7 @@ export class catimer {
       this.max_sessions = 4;
       this.task_name = "";
 
-      this.paused = false;
+      this.paused = true;
       this.minutes_remaining = 0;
       this.seconds_remianing = 0;
       this.session_type = 1;   // W B OR L

@@ -10,25 +10,19 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:focus.startFocus",
-    "onCommand:focus.showIcon"
+    "onCommand:focus.startFocus"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
         "command": "focus.startFocus",
-        "title": "Time to Focus!"
-      },
-      {
-        "command": "focus.showIcon",
-        "title": "Show Focus Cat!",
+        "title": "Time to Focus!",
         "icon": "icons/cat.png"
       }
     ],
-    "configuration": [
-      {
-        "title": "General",
+    "configuration": {
+        "title": "CAT Focus Settings",
         "order": 0,
         "properties": {
           "focus.work_length_setting": {
@@ -42,7 +36,7 @@
               90
             ],
             "default": 25,
-            "description": "Choose work session length"
+            "description": "Choose work session length (minutes)"
           },
           "focus.break_length_setting": {
             "order": 2,
@@ -54,7 +48,7 @@
               20
             ],
             "default": 5,
-            "description": "Choose break session length"
+            "description": "Choose break session length (minutes)"
           },
           "focus.long_break_length_setting": {
             "order": 3,
@@ -66,7 +60,7 @@
               60
             ],
             "default": 20,
-            "description": "Choose long break session length"
+            "description": "Choose long break session length (minutes)"
           },
           "focus.max_sessions_setting": {
             "order": 4,
@@ -82,12 +76,11 @@
             "description": "Choose number of sessions before a long break"
           }
         }
-      }
-    ],
+      },
     "menus": {
       "editor/title": [
         {
-          "command": "focus.showIcon",
+          "command": "focus.startFocus",
           "group": "navigation"
         }
       ]
@@ -114,7 +107,5 @@
     "mocha": "^10.0.0",
     "typescript": "^4.7.4"
   },
-  "dependencies": {
-    "vscode": "^1.1.37"
-  }
+  "dependencies": {}
 }
