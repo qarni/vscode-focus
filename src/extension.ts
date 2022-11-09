@@ -88,15 +88,12 @@ async function startInfinitetimer() {
 		}
 		else if(catTimer.sessionType === 1) {
 			currmin = catTimer.workLength;
-			currsec = 0;
 		}
 		else if (catTimer.sessionType === 2) {
 			currmin = catTimer.breakLength;
-			currsec = 0;
 		}
 		else if (catTimer.sessionType === 3) {
 			currmin = catTimer.longBreakLength;
-			currsec = 0;
 		}
 
 		// start the session
