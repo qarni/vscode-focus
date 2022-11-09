@@ -1,7 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-
+import { getConfigValue, ThemeConfig, updateConfig } from "./config/config"
 import { catimer } from './catimer';
 
 let statusBarItem: vscode.StatusBarItem;
@@ -60,6 +60,29 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(startFocus);
 	context.subscriptions.push(showIcon);
 	context.subscriptions.push(statusBarItem);
+
+	  // Subscribe to configuration changes
+	  context.subscriptions.push(
+		vscode.workspace.onDidChangeConfiguration(onDidChangeConfiguration)
+	  );
+
+	  // Initialize from the current configuration
+	  onDidChangeConfiguration();
+}
+
+function onDidChangeConfiguration() {
+	const config = vscode.workspace.getConfiguration("focus");
+	const workLengthSetting = getConfigValue("work_length_setting", config);
+	const breakLengthSetting = getConfigValue("break_length_setting", config);
+	const longBreakLengthSetting = getConfigValue(
+	  "long_break_length_setting",
+	  config
+	);
+	const maxSessionsSetting = getConfigValue("max_sessions_setting", config);
+	catTimer.workLength = workLengthSetting;
+	catTimer.breakLength = breakLengthSetting;
+	catTimer.breakLength = longBreakLengthSetting;
+	catTimer.breakLength = maxSessionsSetting;
 }
 
 
