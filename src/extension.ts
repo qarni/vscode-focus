@@ -8,6 +8,7 @@ let statusBarItem: vscode.StatusBarItem;
 let catTimer: catimer;
 let counter: { min: number, sec: number };
 let sub_session_count: number;
+let currentTimeout: number;
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -53,10 +54,7 @@ export function activate(context: vscode.ExtensionContext) {
 			startInfinitetimer();
 		});
 	});
-
-	// TODO
-	// Add the call when click pause. change the catTimer.paused to change the boolean. click it twice --> call the starttimer
-
+	
 	context.subscriptions.push(startFocus);
 	context.subscriptions.push(showIcon);
 	context.subscriptions.push(statusBarItem);
@@ -81,34 +79,54 @@ function onDidChangeConfiguration() {
 	const maxSessionsSetting = getConfigValue("max_sessions_setting", config);
 	catTimer.workLength = workLengthSetting;
 	catTimer.breakLength = breakLengthSetting;
-	catTimer.breakLength = longBreakLengthSetting;
-	catTimer.breakLength = maxSessionsSetting;
+	catTimer.longBreakLength = longBreakLengthSetting;
+	catTimer.maxSessions = maxSessionsSetting;
 }
 
-
 async function startInfinitetimer() {
-	// start from the given time 
-	while (!catTimer.isPaused) {
-		//finish the current paused session or the brand new session
-		startTimer(catTimer.remainingMin, catTimer.remainingSec);
-		await new Promise((resolve, reject) => setTimeout(resolve, 1000 * (catTimer.remainingMin * 60 + catTimer.remainingSec)));
-		// finish the rest sessions
-		for (let i = catTimer.sessionNumber; i < catTimer.maxSessions; i++) {
-			catTimer.increaseSessionNumber(i);
-			if (i % 2 === 1) {
-				// WORK
-				startTimer(catTimer.workLength, 0);
-				await new Promise((resolve, reject) => setTimeout(resolve, 1000 * catTimer.workLength * 60));
-			} else {
-				// BREAK
-				startTimer(catTimer.breakLength, 0);
-				await new Promise((resolve, reject) => setTimeout(resolve, 1000 * catTimer.breakLength * 60));
+	while(!catTimer.isPaused) {
+
+		let currmin = 0;
+		let currsec = 0;
+
+		if (catTimer.remainingMin > 0 || catTimer.remainingSec > 0) {
+			currmin = catTimer.remainingMin;
+			currsec = catTimer.remainingSec;
+		}
+		else if(catTimer.sessionType === 1) {
+			currmin = catTimer.workLength;
+			currsec = 0;
+		}
+		else if (catTimer.sessionType === 2) {
+			currmin = catTimer.breakLength;
+			currsec = 0;
+		}
+		else if (catTimer.sessionType === 3) {
+			currmin = catTimer.longBreakLength;
+			currsec = 0;
+		}
+
+		// start the session
+		startTimer(currmin, currsec);
+		await new Promise((resolve, reject) => currentTimeout = setTimeout(resolve, 1000 * (currmin * 60 + currsec)));
+		if(catTimer.isPaused) break;
+
+		// increment if not paused
+		if(catTimer.sessionType === 1) {
+			catTimer.setSessionNumber((catTimer.sessionNumber % catTimer.maxSessions) + 1);
+			if (catTimer.sessionNumber === 1){
+				catTimer.setSessionType(3);
+				vscode.window.showInformationMessage("You finished a whole cycle! Time for an extended break!");
+			}
+			else {
+				catTimer.setSessionType(2);
+				vscode.window.showInformationMessage("Time to take a break!");
 			}
 		}
-		// long break
-		catTimer.increaseSessionNumber(1); // set the session back to 1. 
-		startTimer(catTimer.longBreakLength, 0);
-		await new Promise((resolve, reject) => setTimeout(resolve, 1000 * catTimer.longBreakLength * 60));
+		else {
+			catTimer.setSessionType(1);
+			vscode.window.showInformationMessage("Time to work!");
+		}
 	}
 }
 
@@ -119,15 +137,12 @@ export function deactivate() {
 
 function startTimer(minutes: number, seconds: number) {
 	counter = { min: minutes, sec: seconds };
-	let intervalId = setInterval(() => {
-
-		if (catTimer.isPaused || (counter.min === 0 && counter.sec === 0))
-			clearInterval(intervalId);
+	var intervalId = setInterval(() => {
+		console.log(intervalId + " " + counter.min + " " + counter.sec)
 
 		// keep on setting remaining time 
 		catTimer.setTimeRemaining(counter.min, counter.sec);
 		updateStatusBar();
-
 
 		if (counter.sec - 1 === -1) {
 			counter.min -= 1;
@@ -136,12 +151,19 @@ function startTimer(minutes: number, seconds: number) {
 			counter.sec -= 1;
 		}
 
+		if ((counter.min === 0 && counter.sec === 0) || catTimer.isPaused)  {
+			if (!catTimer.isPaused) {
+				toggleTimer();
+			}
+			clearInterval(intervalId);
+			clearTimeout(currentTimeout);
+		}
 	}, 1000);
 }
 
 function toggleTimer(): void {
 	catTimer.changeStatus();
-	vscode.window.showInformationMessage(`Cat timer is now ` + (catTimer.isPaused ? 'paused' : 'resumed'));
+	vscode.window.showInformationMessage(`Cat timer is now ` + (catTimer.isPaused ? 'paused - click status bar to resume' : 'resumed'));
 
 	updateStatusBar();
 
@@ -151,12 +173,14 @@ function toggleTimer(): void {
 
 // Called every time the status bar needs to be updated
 function updateStatusBar(): void {
-	let statusSymbol = catTimer.isPaused ? '$(play)' : '$(debug-pause)';
+	let statusSymbol = catTimer.isPaused ? '$(play) ' : '$(debug-pause) ';
+	let sessionStatus = catTimer.sessionType === 1 ? `Session: ${catTimer.sessionNumber}/${catTimer.maxSessions}` : "Take a Break!";
 	statusBarItem.text = statusSymbol +
-		`Remaining time: ` +
+		sessionStatus +
+		` - Remaining time: ` +
 		`${catTimer.timeRemaining} ` +
-		`Session: ${catTimer.sessionNumber}/${catTimer.maxSessions} ` +
 		`Task: ${catTimer.taskName}`;
+
 	statusBarItem.show();
 }
 
